@@ -4,7 +4,7 @@ import java.util.Map;
 /**
  * ABSTRACT CLASS - Room
  * Represents a generic hotel room.
- * @version 3.0
+ * @version 4.0
  */
 abstract class Room {
 
@@ -27,7 +27,6 @@ abstract class Room {
 
 /**
  * CLASS - SingleRoom
- * @version 3.0
  */
 class SingleRoom extends Room {
 
@@ -38,7 +37,6 @@ class SingleRoom extends Room {
 
 /**
  * CLASS - DoubleRoom
- * @version 3.0
  */
 class DoubleRoom extends Room {
 
@@ -49,7 +47,6 @@ class DoubleRoom extends Room {
 
 /**
  * CLASS - SuiteRoom
- * @version 3.0
  */
 class SuiteRoom extends Room {
 
@@ -61,61 +58,82 @@ class SuiteRoom extends Room {
 /**
  * CLASS - RoomInventory
  *
- * Use Case 3: Centralized Room Inventory Management
- *
- * This class acts as the single source of truth
- * for room availability.
- *
- * @version 3.0
+ * Centralized room availability storage.
  */
 class RoomInventory {
 
     private Map<String, Integer> roomAvailability;
 
-    /**
-     * Constructor initializes inventory.
-     */
     public RoomInventory() {
         roomAvailability = new HashMap<>();
         initializeInventory();
     }
 
-    /**
-     * Initializes default room availability.
-     */
     private void initializeInventory() {
         roomAvailability.put("Single", 5);
         roomAvailability.put("Double", 3);
         roomAvailability.put("Suite", 2);
     }
 
-    /**
-     * Returns availability map.
-     */
     public Map<String, Integer> getRoomAvailability() {
         return roomAvailability;
     }
 
-    /**
-     * Updates room availability.
-     */
     public void updateAvailability(String roomType, int count) {
         roomAvailability.put(roomType, count);
     }
 }
 
 /**
- * MAIN CLASS - UseCase3InventorySetup
+ * CLASS - RoomSearchService
  *
- * Demonstrates centralized inventory.
- *
- * @version 3.0
+ * Provides read-only room search functionality.
  */
-public class UseCase3InventorySetup {
+class RoomSearchService {
+
+    public void searchAvailableRooms(
+            RoomInventory inventory,
+            Room singleRoom,
+            Room doubleRoom,
+            Room suiteRoom) {
+
+        Map<String, Integer> availability = inventory.getRoomAvailability();
+
+        // Single Room
+        if (availability.get("Single") > 0) {
+            System.out.println("Single Room:");
+            singleRoom.displayRoomDetails();
+            System.out.println("Available: " + availability.get("Single"));
+            System.out.println();
+        }
+
+        // Double Room
+        if (availability.get("Double") > 0) {
+            System.out.println("Double Room:");
+            doubleRoom.displayRoomDetails();
+            System.out.println("Available: " + availability.get("Double"));
+            System.out.println();
+        }
+
+        // Suite Room
+        if (availability.get("Suite") > 0) {
+            System.out.println("Suite Room:");
+            suiteRoom.displayRoomDetails();
+            System.out.println("Available: " + availability.get("Suite"));
+        }
+    }
+}
+
+/**
+ * MAIN CLASS - UseCase4RoomSearch
+ *
+ * Demonstrates read-only room search.
+ */
+public class UseCase4RoomSearch {
 
     public static void main(String[] args) {
 
-        System.out.println("Hotel Room Inventory Status\n");
+        System.out.println("Room Search\n");
 
         Room singleRoom = new SingleRoom();
         Room doubleRoom = new DoubleRoom();
@@ -123,18 +141,13 @@ public class UseCase3InventorySetup {
 
         RoomInventory inventory = new RoomInventory();
 
-        Map<String, Integer> availability = inventory.getRoomAvailability();
+        RoomSearchService searchService = new RoomSearchService();
 
-        System.out.println("Single Room:");
-        singleRoom.displayRoomDetails();
-        System.out.println("Available Rooms: " + availability.get("Single"));
-
-        System.out.println("\nDouble Room:");
-        doubleRoom.displayRoomDetails();
-        System.out.println("Available Rooms: " + availability.get("Double"));
-
-        System.out.println("\nSuite Room:");
-        suiteRoom.displayRoomDetails();
-        System.out.println("Available Rooms: " + availability.get("Suite"));
+        searchService.searchAvailableRooms(
+                inventory,
+                singleRoom,
+                doubleRoom,
+                suiteRoom
+        );
     }
 }
